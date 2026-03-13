@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $tasks = Task::all();
+        return view('tasks.index', compact('tasks'));
     }
 
     /**
@@ -19,7 +22,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('tasks.create');
     }
 
     /**
@@ -27,7 +30,13 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Task::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'is_completed' => $request->has('is_completed')
+        ]);
+
+        return redirect()->route('tasks.index');
     }
 
     /**
@@ -35,7 +44,8 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        return view('tasks.show', compact('task'));
     }
 
     /**
@@ -43,7 +53,8 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -51,7 +62,15 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        $task->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'is_completed' => $request->has('is_completed')
+        ]);
+
+        return redirect()->route('tasks.index');
     }
 
     /**
@@ -59,6 +78,9 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return redirect()->route('tasks.index');
     }
 }
